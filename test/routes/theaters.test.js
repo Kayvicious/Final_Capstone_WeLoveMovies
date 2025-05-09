@@ -3,6 +3,20 @@ const request = require("supertest");
 const app = require("../../src/app");
 const db = require("../../src/db/connection");
 
+const knex = require("knex");
+const config = require("../../knexfile")["test"];
+const dbSql = knex(config);
+
+beforeAll(async () => {
+  await dbSql.migrate.latest();
+});
+
+afterAll(async () => {
+  await dbSql.migrate.rollback(null, true);
+  await dbSql.destroy();
+});
+
+
 describe("Theater Routes", () => {
   beforeAll(() => {
     return db.migrate
